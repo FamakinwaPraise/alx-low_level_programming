@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 /**
  * main - Entry point, prints the first 50 fibonacci numbers
  *
