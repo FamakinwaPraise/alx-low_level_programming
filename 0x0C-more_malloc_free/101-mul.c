@@ -1,149 +1,124 @@
 #include "main.h"
-/* malloc free */
 #include <stdlib.h>
-
-
-/**
- * initDigitArray - allocates and sets to 0 an array to contain the digits
- *   of a base 10 number
- *
- * @size: array size
- * Return: pointer to initialized array, or NULL on failure
- */
-unsigned int *initDigitArray(size_t size)
-{
-	unsigned int *arr = NULL;
-	size_t i;
-
-	arr = malloc(sizeof(unsigned int) * size);
-	if (!arr)
-		return (NULL);
-
-	for (i = 0; i < size; i++)
-		arr[i] = 0;
-
-	return (arr);
-}
-
+#include <stdio.h>
+#include<ctype.h>
 
 /**
- * stringIntMultiply - TBD
+ * _is_zero - determines  if any number is zero
+ * arg: argument vector
  *
- * @prod_digits: array to store digits of product
- * @n1_digits: string containing multiplicand digits in ASCII
- * @n2_digits: string containing multiplier digits in ASCII
- * @n1_len: amount of digits in multiplicand
- * @n2_len: amount of digits in multiplier
+ * Return: no return
  */
-void stringIntMultiply(unsigned int *prod_digits, char *n1_digits,
-		       char *n2_digits, size_t n1_len, size_t n2_len)
+void _is_zero(char *argv[])
 {
-	int i, j, sum;
-	unsigned char digit1, digit2;
+	int i, isn1 = 1, isn2 = 1;
 
-	if (prod_digits == NULL || n1_digits == NULL || n2_digits == NULL)
-		return;
-
-	for (i = n1_len - 1; i >= 0; i--)
-	{
-		sum = 0;
-		digit1 = n1_digits[i] - '0';
-
-		for (j = n2_len - 1; j >= 0; j--)
+	for (i = 0; argv[1][i]; i++)
+		if (argv[1][i] != '0')
 		{
-			digit2 = n2_digits[j] - '0';
-
-			sum += prod_digits[i + j + 1] + (digit1 * digit2);
-
-			prod_digits[i + j + 1] = sum % 10;
-
-			sum /= 10;
+			isn1 = 0;
+			break;
 		}
 
-		if (sum > 0)
-			prod_digits[i + j + 1] += sum;
-	}
-}
-
-
-/**
- * stringIsPosInt - validates if string represents a positive integer
- *
- * @s: string to test
- * Return: 1 if true, 0 if false
- */
-int stringIsPosInt(char *s)
-{
-	size_t i;
-
-	for (i = 0; s[i]; i++)
+	for (i = 0; argv[2][i]; i++)
+		if (argv[2][i] != '0')
+		{
+			isn2 = 0;
+			break;
+		}
+	if (isn1 == 1 || isn2 == 1)
 	{
-		if (s[i] < '0' || s[i] > '9')
-			return (0);
+		printf("0\n");
+		exit(0);
 	}
-
-	return (1);
 }
 
-
 /**
- * error - error return
+ *  _initialize_array - set memery to zero in a new array
+ *  @ar: char array
+ *  @lar: length of the char array.
  *
- * @status: error code to exit with
+ *  Return: pointer of a char array
  */
-void error(int status)
+char *_initialize_array(char *ar, int lar)
 {
-	_putchar('E');
-	_putchar('r');
-	_putchar('r');
-	_putchar('o');
-	_putchar('r');
-	_putchar('\n');
-	exit(status);
+	int i = 0;
+
+	for (i = 0; i < lar; i++)
+		ar[i] = '0';
+	ar[lar] = '0';
+	return (ar);
 }
 
+/**
+ * _checknum - determines length of a num
+ * and checks if num is in base 10
+ * @argv: arguments vector
+ * @n: row of the array
+ *
+ * Return: length of the num
+ */
+int _checknum(char *argv[], int n)
+{
+	int ln;
+
+	for (ln = 0; argv[n][ln]; ln++)
+		if (!isdigit(argv[n][ln]))
+		{
+			printf("Error\n");
+			exit(98);
+		}
+
+	return (ln);
+}
 
 /**
- * main - entry point
+ *  main -Entry point
+ *  program that multiplies 2 +ve numbers
+ *  @agc: number of agrs
+ *  @argv: args vector
  *
- * @argc: number of commmand line arguments
- * @argv: array of commmand line arguments
- * Return: 0 on success, 98 on failure
+ *  Return: 0 - success
  */
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-	size_t i, av1_len, av2_len, prod_len;
-	unsigned int *prod_digits = NULL;
+	int ln1, ln2, lnout, add, addl, i, j, k, ca;
+	char *nout;
 
-	if (argc != 3 || !stringIsPosInt(argv[1]) ||
-	    !stringIsPosInt(argv[2]))
-		error(98);
-
-	for (i = 0, av1_len = 0; argv[1][i]; i++)
-		av1_len++;
-
-	for (i = 0, av2_len = 0; argv[2][i]; i++)
-		av2_len++;
-
-	prod_len = av1_len + av2_len;
-	prod_digits = initDigitArray(prod_len);
-	if (prod_digits == NULL)
-		error(98);
-
-	stringIntMultiply(prod_digits, argv[1], argv[2], av1_len, av2_len);
-
-	/* omit leading zeroes */
-	for (i = 0; !prod_digits[i] && i < prod_len; i++)
-	{}
-
-	if (i == prod_len)
-		_putchar('0');
-
-	for (; i < prod_len; i++)
-		_putchar(prod_digits[i] + '0');
-	_putchar('\n');
-
-	free(prod_digits);
-
-	return (0);
+	if (argc != 3)
+		printf("Error\n"), exit(98);
+	ln1 = _checknum(argv, 1), ln2 = _checknum(argv, 2);
+	_is_zero(argv), lnout = ln1+ ln2, nout = malloc(lnout + 1);
+	if (nout == NULL)
+		printf("Error\n"), exit(98);
+	nout = _initialize_array(nout, lnout);
+	k = lnout - 1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
+	for (; k >= 0; k--, i--)
+	{
+		if (i < 0)
+		{
+			if (addl > 0)
+				add = (nout[k] - '0') + addl;
+			if (add > 9)
+				nout[k - 1] = (add / 10) + '0';
+			nout[k] = (add % 10) + '0';
+		}
+		i = ln1 - 1, j--, addl = 0, caTT, k = lnout - (1 + ca);
+	}
+	if (j < 0)
+	{
+		if (nout[0] != '0')
+			break;
+		lnout--;
+		free(lnout), nout = malloc(lnout + 1), nout = _initialize_array(nout, lnout);
+		k = lnout -1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
+	}
+	if (j >= 0)
+	{
+		add = ((argv[1][i] - '0') * (argv[2][i] - '0')) + (nout[k] - '0') + addl;
+		addl = add / 10, nout[k] = (add % 10) + '0';
+	}
+}
+printf("%s\n", nout);
+return (0);
 }
